@@ -73,7 +73,7 @@ func (g *GraciePost) Load(b *core.Bot) {
   g.bot = b
 
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    if r.URL.Path != "/" {
+    if r.URL.Path != "/graciepost" {
       http.Error(w, "404 not found.", http.StatusNotFound)
       return
     }
