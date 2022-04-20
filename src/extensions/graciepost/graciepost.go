@@ -3,6 +3,7 @@ package graciepost
 import (
   "net/http"
   "log"
+  "fmt"
   "encoding/json"
   "strings"
 
@@ -117,7 +118,7 @@ func (g *GraciePost) OnConnect() {
 
 func (g *GraciePost) Post(meta PostMeta) {
   msg, err := g.bot.Session.ChannelMessageSendComplex(meta.Channel, g.createMsg(meta))
-  log.Print(err) // need better error handling overall
+  if err != nil { fmt.Printf("GraciePost: %s", err) }
 
   // add like button if the plugin is connected
   if g.likeExtensionEnabled { g.ext_like.AddLike(msg) }
