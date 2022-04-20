@@ -12,11 +12,13 @@ import (
 
 
 type Like struct {
+  id string
   bot *core.Bot
   emoji *emoji.Emoji
   info core.ExtensionInfo
 }
 
+func (l *Like) ID() string { return l.id }
 func (l *Like) Info() core.ExtensionInfo { return l.info }
 
 
@@ -27,6 +29,7 @@ type Config struct {
 
 func New(cnf Config) *Like {
   l := &Like{
+    id: "graciebell.art.like",
     emoji: &emoji.YellowHeart,
     info: core.ExtensionInfo {
       Name: "Like",

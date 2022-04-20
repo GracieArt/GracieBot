@@ -13,6 +13,7 @@ import (
 
 
 type CmdManager struct {
+  id string
   bot *core.Bot
   prefix string
   commands map[string]*Command
@@ -20,6 +21,7 @@ type CmdManager struct {
   info core.ExtensionInfo
 }
 
+func (man *CmdManager) ID() string { return man.id }
 func (man *CmdManager) Info() core.ExtensionInfo { return man.info }
 
 
@@ -38,6 +40,7 @@ func New(cnf Config) (*CmdManager, error) {
   }
 
   man := &CmdManager{
+    id: "graciebell.art.cmd",
     prefix: cnf.Prefix,
     commands: make(map[string]*Command),
     cmdsByGroup: make(map[string][]*Command),

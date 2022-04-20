@@ -31,6 +31,7 @@ type PostMeta struct {
 
 
 type GraciePost struct {
+  id string
   bot *core.Bot
   port string
   charLimit int
@@ -40,6 +41,7 @@ type GraciePost struct {
   info core.ExtensionInfo
 }
 
+func (g *GraciePost) ID() string { return g.id }
 func (g *GraciePost) Info() core.ExtensionInfo { return g.info }
 
 
@@ -53,6 +55,7 @@ type Config struct {
 
 func New(cnf Config) *GraciePost {
   gp := &GraciePost{
+    id : "graciebell.art.graciepost",
     port : "30034",
     ext_like : cnf.LikeExtension,
     charLimit : 180,
@@ -71,6 +74,8 @@ func New(cnf Config) *GraciePost {
 
 func (g *GraciePost) Load(b *core.Bot) {
   g.bot = b
+
+  if g.bot.Extensions()[]
 
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
