@@ -73,11 +73,6 @@ func (g *GraciePost) Load(b *core.Bot) {
   g.bot = b
 
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    if r.URL.Path != "/graciepost" {
-      http.Error(w, "404 not found.", http.StatusNotFound)
-      return
-    }
-
     w.Header().Set("Access-Control-Allow-Origin", "*")
 
     switch r.Method {
@@ -174,6 +169,7 @@ func (g *GraciePost) createMsg(meta PostMeta) *discordgo.MessageSend {
 
 
 
+
 type Menu struct {
   Title string `json:"title"`
   ID string `json:"id"`
@@ -185,30 +181,47 @@ type MenuLevel struct {
   Items []Menu `json:"items"`
 }
 
+// get the object with all the menus to send back to the GraciePost extension
 func (g *GraciePost) GetChannels() []byte {
-  // get guilds
-  guilds := funk.Map(g.bot.Session.State.Ready.Guilds,
+  // get guilds. (have to do it this way kuz the guilds in State.Ready
+  // are not populated with the channels. Idk how to elegantly handle the
+  // situation where the guilds from State.Ready for some reason doesn't line up
+  // with the guilds you can retrieve from Session.Guild() tho)
+  tempGuilds := g.bot.Session.State.Ready.Guilds
+  guilds := funk.Map(tempGuilds,
     func(tempGuild *discordgo.Guild) *discordgo.Guild {
-      guild, _ := g.bot.Session.Guild(tempGuild.ID)
+      guild, err := g.bot.Session.Guild(tempGuild.ID)
+      if err != nil {
+        panic(fmt.Errorf("graciepost: error getting guilds: %w", err))
+      }
       return guild
     },
   ).([]*discordgo.Guild)
 
+  // we create this map to filter out the empty categories later on
+  categorySizes := make(map[string]int)
+
   // get all channels
-  channels := []*discordgo.Channel{}
+  textChannels := []*discordgo.Channel{}
+  categories := []*discordgo.Channel{}
   for _, guild := range guilds {
     guildChannels, _ := g.bot.Session.GuildChannels(guild.ID)
-    channels = append(channels, guildChannels...)
+
+    // separate text and category channels
+    for _, ch := range guildChannels {
+      switch ch.Type {
+      case discordgo.ChannelTypeGuildText:
+        textChannels = append(textChannels, ch)
+        if ch.ParentID != "" { categorySizes[ch.ParentID]++ }
+      case discordgo.ChannelTypeGuildCategory:
+        categories = append(categories, ch)
+      }
+    }
   }
 
-  // filter just the categories
-  categories := funk.Filter(channels, func(ch *discordgo.Channel) bool {
-    return ch.Type == discordgo.ChannelTypeGuildCategory
-  }).([]*discordgo.Channel)
-
-  // filter just the text channels
-  textChannels := funk.Filter(channels, func(ch *discordgo.Channel) bool {
-    return ch.Type == discordgo.ChannelTypeGuildText
+  // filter out categories with no text channels
+  categories = funk.Filter(categories, func(cat *discordgo.Channel) bool {
+    if categorySizes[cat.ID] > 0 { return true } else { return false }
   }).([]*discordgo.Channel)
 
   // create the struct to be sent as json
@@ -237,11 +250,13 @@ func (g *GraciePost) GetChannels() []byte {
     MenuLevel{
       Name: "channels",
       Items: funk.Map(textChannels, func(ch *discordgo.Channel) Menu {
-        return Menu{
+        m := Menu{
           Title: ch.Name,
           ID: ch.ID,
           ParentID: ch.ParentID,
         }
+        if m.ParentID == "" { m.ParentID = ch.GuildID }
+        return m
       }).([]Menu),
     },
   }
