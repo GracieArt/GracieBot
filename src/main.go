@@ -35,6 +35,7 @@ func main() {
 
   ext_graciepost := graciepost.New(graciepost.Config{
     LikeExtension: ext_like,
+    Key: os.Getenv("GRACIEPOST_KEY"),
   })
 
 

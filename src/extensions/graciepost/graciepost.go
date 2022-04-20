@@ -35,6 +35,7 @@ type GraciePost struct {
   charLimit int
   ext_like *like.Like
   likeExtensionEnabled bool
+  key string
   info core.ExtensionInfo
 }
 
@@ -45,6 +46,7 @@ type Config struct {
   CharLimit int
   LikeExtension *like.Like
   Port string
+  Key string
 }
 
 
@@ -53,6 +55,7 @@ func New(cnf Config) *GraciePost {
     port : "30034",
     ext_like : cnf.LikeExtension,
     charLimit : 180,
+    key : cnf.Key,
     info: core.ExtensionInfo{
       Name: "GraciePost",
       Description: "Post images from your browser using the GraciePost Firefox extension.",
@@ -80,12 +83,24 @@ func (g *GraciePost) Load(b *core.Bot) {
     case "GET":
       w.Header().Set("Content-Type", "application/json")
       w.Write(g.GetChannels())
+
+
     case "POST":
       decoder := json.NewDecoder(r.Body)
       var meta PostMeta
       err := decoder.Decode(&meta)
-      if err != nil { http.Error(w, err.Error(), http.StatusBadRequest) }
+      if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+      }
+
+      if meta.Key != g.key {
+        http.Error(w, "401 unauthorized.", http.StatusUnauthorized)
+        return
+      }
       g.Post(meta)
+
+
     default:
       http.Error(w, "501 method not implmemented.", http.StatusNotImplemented)
     }
