@@ -2,7 +2,6 @@ package main
 
 import (
   "fmt"
-  "flag"
   "os"
 
   "github.com/gracieart/graciebot-core"
@@ -14,20 +13,6 @@ import (
   "github.com/joho/godotenv"
   "github.com/enescakir/emoji"
 )
-
-
-// Variables used for command line parameters
-var (
-	Token string
-)
-
-
-func init() {
-
-	flag.StringVar(&Token, "t", "", "Bot Token")
-	flag.Parse()
-}
-
 
 
 func main() {
