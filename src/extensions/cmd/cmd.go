@@ -51,7 +51,12 @@ func New(cnf Config) (*CmdManager, error) {
   }
 
   // add the default commands to the list
-  cmds := append(cnf.Commands, man.defaultCommands()...)
+  cmds := append(
+    cnf.Commands,
+    man.stdCmd_help(),
+    man.stdCmd_commands(),
+    man.stdCmd_extensions(),
+  )
 
   // validate and register each command
   for _, c := range cmds {
@@ -85,13 +90,14 @@ func New(cnf Config) (*CmdManager, error) {
 
 
 // register the message handler on load
-func (man *CmdManager) Load(b *core.Bot) {
-  b.MsgManager.AddHandler( func (m *discordgo.MessageCreate) bool {
+func (man *CmdManager) Load(b *core.Bot) error {
+  b.AddMsgHandler( func (m *discordgo.MessageCreate) bool {
     if !strings.HasPrefix(m.Content, man.prefix) { return false }
     man.Eval(m.Message)
     return true
   })
   man.bot = b
+  return nil
 }
 
 func (man *CmdManager) OnConnect() {} // satisfies extension interface

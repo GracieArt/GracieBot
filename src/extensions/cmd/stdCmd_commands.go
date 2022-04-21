@@ -5,96 +5,13 @@ import (
   "strings"
 
   "github.com/bwmarrin/discordgo"
-  "github.com/gracieart/graciebot-core"
 
   "github.com/thoas/go-funk"
 )
 
 
-// returns default commands
-func (man *CmdManager) defaultCommands() []*Command {
-  return []*Command{
-    man.cmd_help(),
-    man.cmd_commands(),
-    man.cmd_extensions(),
-  }
-}
-
-
-
-
-
-// Gives helpful info on a specific command
-func (man *CmdManager) cmd_help() *Command {
-  const thisCmdName = "help"
-
-  return &Command{
-    Name: thisCmdName,
-    Group: "utility",
-    Description: "Gives info on a specific command.",
-    Args: []Arg{
-      Arg{
-        Key: "command",
-        Type: ArgType_String,
-      },
-    },
-
-
-    Run: func (data Call) (*discordgo.MessageSend, error) {
-      response := &discordgo.MessageSend{}
-
-      // no name provided
-      if data.Args["command"] == nil {
-        response.Content = fmt.Sprintf(
-          "You must specify the command that you need help with.\n"+
-          "For a list of commands, use `%s commands`.",
-          data.Prefix,
-        )
-        return response, nil
-      }
-
-      // get lowercase command name argument
-      cmdName := strings.ToLower(data.Args["command"].(string))
-
-      // check that command exists
-      cmd, exists := man.commands[cmdName];
-      if !exists {
-        response.Content = fmt.Sprintf(
-          "`%s` is not a recognized command.\nFor a list of commands, use `%s commands`.",
-          cmdName, data.Prefix,
-        )
-        return response, nil
-      }
-
-      // Show info on command
-      // generate the line that illustrates the form of the command
-      syntaxElems := []string{ data.Prefix, cmd.Name }
-      for _, arg := range cmd.Args {
-        syntaxElems = append(syntaxElems, "<" + arg.Key + ">")
-      }
-      syntax := strings.Join(syntaxElems, " ")
-
-      // create the embed
-      embed := &discordgo.MessageEmbed {
-        Title: strings.Title(cmd.Name) + " | Help",
-        Description: fmt.Sprintf(
-          "%s\n\n**Syntax**```%s```",
-          cmd.Description, syntax,
-        ),
-      }
-
-      response.Embeds = []*discordgo.MessageEmbed{ embed }
-      return response, nil
-    },
-  }
-}
-
-
-
-
-
 // A big ol command list
-func (man *CmdManager) cmd_commands() *Command {
+func (man *CmdManager) stdCmd_commands() *Command {
   const cmdName = "commands"
 
   return &Command{
@@ -197,43 +114,6 @@ func (man *CmdManager) cmd_commands() *Command {
           "Unrecognized group. Use `%s %s` for a list of command groups.",
           data.Prefix, cmdName,
         )
-      }
-
-      return response, nil
-    },
-  }
-}
-
-
-
-
-
-
-
-// Sends a list of all the registered extensions
-func (man *CmdManager) cmd_extensions() *Command {
-  const thisCmdName = "extensions"
-
-  return &Command{
-    Name: thisCmdName,
-    Group: "utility",
-    Description: "Lists all registered extensions.",
-    // need to add arg for page number, but will do that later when pagination is seperated
-
-    Run: func (data Call) (*discordgo.MessageSend, error) {
-      response := &discordgo.MessageSend{
-        Embeds: []*discordgo.MessageEmbed{
-          &discordgo.MessageEmbed{
-            Title: "Extensions",
-            Description: "The following extensions are registered with this bot:",
-            Fields: funk.Map(
-              man.bot.ExtManager.Info(),
-              func (i core.ExtensionInfo) *discordgo.MessageEmbedField {
-                return &discordgo.MessageEmbedField{ i.Name, i.Description, false }
-              },
-            ).([]*discordgo.MessageEmbedField),
-          },
-        },
       }
 
       return response, nil

@@ -21,20 +21,21 @@ func main() {
   }
 
 
-  ext_cmd, err := cmd.New(cmd.Config{
+  ClassicCommands, err := cmd.New(cmd.Config{
     Prefix: "g!",
     Commands: []*cmd.Command{
       commands.Poll,
     },
   })
-  if err != nil { panic(fmt.Errorf("error creating Classic Commands extension: %s", err)) }
+  if err != nil {
+    panic(fmt.Errorf("error creating Classic Commands extension: [%w]", err))
+  }
 
-  ext_like := like.New(like.Config{
+  Like := like.New(like.Config{
     Emoji: &emoji.YellowHeart,
   })
 
-  ext_graciepost := graciepost.New(graciepost.Config{
-    LikeExtension: ext_like,
+  GraciePost := graciepost.New(graciepost.Config{
     Key: os.Getenv("GRACIEPOST_KEY"),
   })
 
@@ -42,17 +43,12 @@ func main() {
 	GracieBot, err := core.NewBot(core.Config{
     Token: os.Getenv("DISCORD_API_TOKEN"),
     Extensions: []core.Extension{
-      ext_cmd,
-      ext_graciepost,
-      ext_like,
+      ClassicCommands,
+      GraciePost,
+      Like,
     },
   })
-
-
-	if err != nil {
-		fmt.Printf("error creating bot %s", err)
-		return
-	}
+	if err != nil { panic(fmt.Errorf("error creating bot: [%w]", err)) }
 
 	GracieBot.Connect()
 }

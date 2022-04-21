@@ -40,20 +40,17 @@ func New(cnf Config) *Like {
   return l
 }
 
-func (l *Like) Load(b *core.Bot) {
-  b.MsgManager.AddHandler(l.OnMessage)
+func (l *Like) Load(b *core.Bot) error {
+  b.AddMsgHandler(func (m *discordgo.MessageCreate) bool {
+    if !containsMedia(m) || m.Author.Bot { return false }
+    l.AddLike(m.Message)
+    return true
+  })
   l.bot = b
+  return nil
 }
 
 func (l *Like) OnConnect() {} // satisfy extension interface
-
-
-// the message handler
-func (l *Like) OnMessage(m *discordgo.MessageCreate) bool {
-  if !containsMedia(m) || m.Author.Bot { return false }
-  l.AddLike(m.Message)
-  return true
-}
 
 
 func (l *Like) AddLike(m *discordgo.Message) {

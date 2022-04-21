@@ -36,7 +36,6 @@ type GraciePost struct {
   port string
   charLimit int
   ext_like *like.Like
-  likeExtensionEnabled bool
   key string
   info core.ExtensionInfo
 }
@@ -47,7 +46,6 @@ func (g *GraciePost) Info() core.ExtensionInfo { return g.info }
 
 type Config struct {
   CharLimit int
-  LikeExtension *like.Like
   Port string
   Key string
 }
@@ -57,7 +55,6 @@ func New(cnf Config) *GraciePost {
   gp := &GraciePost{
     id : "graciebell.art.graciepost",
     port : "30034",
-    ext_like : cnf.LikeExtension,
     charLimit : 180,
     key : cnf.Key,
     info: core.ExtensionInfo{
@@ -67,15 +64,16 @@ func New(cnf Config) *GraciePost {
   }
   if cnf.Port != "" { gp.port = cnf.Port }
   if cnf.CharLimit > 0 { gp.charLimit = cnf.CharLimit }
-  if cnf.LikeExtension != nil { gp.likeExtensionEnabled = true }
   return gp
 }
 
 
-func (g *GraciePost) Load(b *core.Bot) {
+func (g *GraciePost) Load(b *core.Bot) error {
   g.bot = b
 
-  if g.bot.Extensions()[]
+  if l, ok := g.bot.FindExtension("graciebell.art.like"); ok {
+    g.ext_like = l.(*like.Like)
+  }
 
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -106,6 +104,8 @@ func (g *GraciePost) Load(b *core.Bot) {
       http.Error(w, "501 method not implmemented.", http.StatusNotImplemented)
     }
   })
+
+  return nil
 }
 
 
@@ -121,7 +121,7 @@ func (g *GraciePost) Post(meta PostMeta) {
   if err != nil { fmt.Printf("GraciePost: %s", err) }
 
   // add like button if the plugin is connected
-  if g.likeExtensionEnabled { g.ext_like.AddLike(msg) }
+  if g.ext_like != nil { g.ext_like.AddLike(msg) }
 }
 
 
@@ -189,16 +189,11 @@ type MenuLevel struct {
 // get the object with all the menus to send back to the GraciePost extension
 func (g *GraciePost) GetChannels() []byte {
   // get guilds. (have to do it this way kuz the guilds in State.Ready
-  // are not populated with the channels. Idk how to elegantly handle the
-  // situation where the guilds from State.Ready for some reason doesn't line up
-  // with the guilds you can retrieve from Session.Guild() tho)
+  // are not populated with the channels)
   tempGuilds := g.bot.Session.State.Ready.Guilds
   guilds := funk.Map(tempGuilds,
     func(tempGuild *discordgo.Guild) *discordgo.Guild {
-      guild, err := g.bot.Session.Guild(tempGuild.ID)
-      if err != nil {
-        panic(fmt.Errorf("graciepost: error getting guilds: %w", err))
-      }
+      guild, _ := g.bot.Session.Guild(tempGuild.ID)
       return guild
     },
   ).([]*discordgo.Guild)
