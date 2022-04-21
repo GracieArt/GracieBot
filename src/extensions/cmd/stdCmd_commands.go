@@ -16,7 +16,7 @@ func (man *CmdManager) stdCmd_commands() *Command {
 
   return &Command{
     Name: cmdName,
-    Group: "utility",
+    Group: "information",
     Description: "Displays a list of available commands.",
     Args: []Arg{
       Arg{
