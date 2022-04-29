@@ -8,7 +8,7 @@ import (
   "strings"
 
   "github.com/bwmarrin/discordgo"
-  "github.com/gracieart/graciebot-core"
+  "github.com/gracieart/bubblebot"
 
   "github.com/gracieart/graciebot/src/extensions/like"
   "github.com/thoas/go-funk"
@@ -32,8 +32,8 @@ type PostMeta struct {
 
 type GraciePost struct {
   extensionID string
-  extensionInfo core.ExtensionInfo
-  bot *core.Bot
+  extensionInfo bubble.ExtensionInfo
+  bot *bubble.Bot
   port string
   charLimit int
   ext_like *like.Like
@@ -41,7 +41,7 @@ type GraciePost struct {
 }
 
 func (g *GraciePost) ExtensionID() string { return g.extensionID }
-func (g *GraciePost) ExtensionInfo() core.ExtensionInfo { return g.extensionInfo }
+func (g *GraciePost) ExtensionInfo() bubble.ExtensionInfo { return g.extensionInfo }
 
 
 type Config struct {
@@ -57,7 +57,7 @@ func New(cnf Config) *GraciePost {
     port : "30034",
     charLimit : 180,
     key : cnf.Key,
-    extensionInfo: core.ExtensionInfo{
+    extensionInfo: bubble.ExtensionInfo{
       Name: "GraciePost",
       Description: "Post images from your browser using the GraciePost Firefox extension.",
     },
@@ -68,7 +68,7 @@ func New(cnf Config) *GraciePost {
 }
 
 
-func (g *GraciePost) Load(b *core.Bot) error {
+func (g *GraciePost) Load(b *bubble.Bot) error {
   g.bot = b
 
   if l, ok := g.bot.FindExtension("graciebell.art.like"); ok {
@@ -110,9 +110,9 @@ func (g *GraciePost) Load(b *core.Bot) error {
 
 
 
-func (g *GraciePost) OnLifecycleEvent(l core.LifecycleEvent) error {
+func (g *GraciePost) OnLifecycleEvent(l bubble.LifecycleEvent) error {
   switch l {
-  case core.LE_Connect:
+  case bubble.LE_Connect:
     go g.listen()
   }
   return nil

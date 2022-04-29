@@ -2,7 +2,7 @@ package slash
 
 import (
   "github.com/bwmarrin/discordgo"
-  "github.com/gracieart/graciebot-core"
+  "github.com/gracieart/bubblebot"
 
   "github.com/thoas/go-funk"
 )
@@ -31,7 +31,7 @@ func (s *Slash) stdlib_extensions() *Command {
         Description: "The following extensions are registered with this bot:",
         Fields: funk.Map(
           s.bot.Extensions(),
-          func (e core.Extension) *discordgo.MessageEmbedField {
+          func (e bubble.Extension) *discordgo.MessageEmbedField {
             info := e.ExtensionInfo()
             return &discordgo.MessageEmbedField{
               info.Name, info.Description, false,

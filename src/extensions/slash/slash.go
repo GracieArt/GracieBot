@@ -2,28 +2,28 @@ package slash
 
 
 import (
-  "github.com/gracieart/graciebot-core"
+  "github.com/gracieart/bubblebot"
 )
 
 
 
 type Slash struct {
   extensionID string
-  extensionInfo core.ExtensionInfo
-  bot *core.Bot
+  extensionInfo bubble.ExtensionInfo
+  bot *bubble.Bot
   cmdsToRegister []*Command
   commands map[string]*Command
   cmdsByCat map[string][]*Command
 }
 
 func (s *Slash) ExtensionID() string { return s.extensionID }
-func (s *Slash) ExtensionInfo() core.ExtensionInfo { return s.extensionInfo }
+func (s *Slash) ExtensionInfo() bubble.ExtensionInfo { return s.extensionInfo }
 
 
 func New(cmds ...*Command) (*Slash) {
   return &Slash{
     extensionID: "graciebell.art.slash",
-    extensionInfo: core.ExtensionInfo{
+    extensionInfo: bubble.ExtensionInfo{
       Name: "Slash Commands",
       Description: "Add interactive chat commands to your bot in a way " +
         "that's integrated with the Discord UI."},
@@ -34,7 +34,7 @@ func New(cmds ...*Command) (*Slash) {
 }
 
 
-func (s *Slash) Load(b *core.Bot) error {
+func (s *Slash) Load(b *bubble.Bot) error {
   s.bot = b
   s.bot.Session.AddHandler(s.handleCommand)
   return nil
@@ -43,15 +43,15 @@ func (s *Slash) Load(b *core.Bot) error {
 
 
 func (s *Slash) OnLifecycleEvent(
-  l core.LifecycleEvent,
+  l bubble.LifecycleEvent,
 ) (
   err error,
 ) {
   switch l {
-  case core.LE_Connect:
+  case bubble.LE_Connect:
     err = s.registerCommands()
 
-  case core.LE_Close:
+  case bubble.LE_Close:
     err = s.removeAllCommands()
   }
   return

@@ -3,7 +3,7 @@ package slash
 
 import (
   "github.com/bwmarrin/discordgo"
-  "github.com/gracieart/graciebot-core"
+  "github.com/gracieart/bubblebot"
 )
 
 
@@ -38,7 +38,7 @@ type CmdConfig struct {
 
 
 type CmdData struct {
-  Bot *core.Bot
+  Bot *bubble.Bot
   DM bool
   GuildID, ChannelID string
   Invoker CmdInvoker

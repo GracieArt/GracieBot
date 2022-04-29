@@ -5,7 +5,7 @@ import (
   "strings"
 
   "github.com/bwmarrin/discordgo"
-  "github.com/gracieart/graciebot-core"
+  "github.com/gracieart/bubblebot"
 
   "github.com/enescakir/emoji"
 )
@@ -13,13 +13,13 @@ import (
 
 type Like struct {
   extensionID string
-  extensionInfo core.ExtensionInfo
-  bot *core.Bot
+  extensionInfo bubble.ExtensionInfo
+  bot *bubble.Bot
   emoji *emoji.Emoji
 }
 
 func (l *Like) ExtensionID() string { return l.extensionID }
-func (l *Like) ExtensionInfo() core.ExtensionInfo { return l.extensionInfo }
+func (l *Like) ExtensionInfo() bubble.ExtensionInfo { return l.extensionInfo }
 
 
 type Config struct {
@@ -31,7 +31,7 @@ func New(cnf Config) *Like {
   l := &Like{
     extensionID: "graciebell.art.like",
     emoji: &emoji.YellowHeart,
-    extensionInfo: core.ExtensionInfo {
+    extensionInfo: bubble.ExtensionInfo {
       Name: "Like",
       Description: "Adds a like button to every message that contains media.",
     },
@@ -40,7 +40,7 @@ func New(cnf Config) *Like {
   return l
 }
 
-func (l *Like) Load(b *core.Bot) error {
+func (l *Like) Load(b *bubble.Bot) error {
   b.AddMsgHandler(func (m *discordgo.MessageCreate) bool {
     if !containsMedia(m) || m.Author.Bot { return false }
     l.AddLike(m.Message)
@@ -52,7 +52,7 @@ func (l *Like) Load(b *core.Bot) error {
 
 
 // satisfy extension interface
-func (l *Like) OnLifecycleEvent(core.LifecycleEvent) error { return nil }
+func (l *Like) OnLifecycleEvent(bubble.LifecycleEvent) error { return nil }
 
 
 func (l *Like) AddLike(m *discordgo.Message) {

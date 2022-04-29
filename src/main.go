@@ -4,7 +4,7 @@ import (
   "fmt"
   "os"
 
-  "github.com/gracieart/graciebot-core"
+  "github.com/gracieart/bubblebot"
   "github.com/gracieart/graciebot/src/extensions/slash"
   "github.com/gracieart/graciebot/src/extensions/like"
   "github.com/gracieart/graciebot/src/extensions/graciepost"
@@ -32,9 +32,9 @@ func main() {
   })
 
 
-	GracieBot, err := core.NewBot(core.Config{
+	GracieBot, err := bubble.NewBot(bubble.Config{
     Token: os.Getenv("DISCORD_API_TOKEN"),
-    Extensions: []core.Extension{
+    Extensions: []bubble.Extension{
       Slash,
       GraciePost,
       Like,
