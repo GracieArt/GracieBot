@@ -2,67 +2,65 @@ package commands
 
 import (
   "github.com/bwmarrin/discordgo"
-  "github.com/gracieart/graciebot/src/extensions/cmd"
+  "github.com/gracieart/graciebot/src/extensions/slash"
 
   "github.com/tmdvs/Go-Emoji-Utils"
 )
 
 
-var Poll = &cmd.Command{
+var Poll = slash.NewCommand(slash.CmdConfig{
   Name: "poll",
-  Group: "fun",
-  Description: "Makes a quick reaction poll.",
-  Args: []cmd.Arg{
-    cmd.Arg{
-      Key: "content",
-      Type: cmd.ArgType_String,
-    },
+  Category: "fun",
+  Description: "Makes a quick reaction poll",
+  Options: []*discordgo.ApplicationCommandOption{
+    {
+      Type: discordgo.ApplicationCommandOptionString,
+      Name: "content",
+      Description: "The content of the poll",
+      Required: true },
   },
 
-  Run: func (data cmd.Call) (*discordgo.MessageSend, error) {
-    response := &discordgo.MessageSend{}
+  Handle: func (
+    data slash.CmdData,
+  ) (
+    res *discordgo.InteractionResponse,
+    err error,
+  ) {
+    res = slash.NewInteractionResponse(discordgo.InteractionResponseChannelMessageWithSource)
 
-    if data.Args["content"] == nil {
-      response.Content = "You must provide the poll message."
-      return response, nil
-    }
-
-
-    content := data.Args["content"].(string)
+    content := data.Options["content"].StringValue()
 
     // find emojis
     emojis := emoji.FindAll(content)
     switch len(emojis) {
     case 0:
-      response.Content = "You must use emojis for the poll choices"
-      return response, nil
+      res.Data.Content = "You must use emojis for the poll choices"
+      res.Data.Flags = uint64(discordgo.MessageFlagsEphemeral)
+      return
     case 1:
-      response.Content = "You must provide more than one emoji choice for a fair poll"
-      return response, nil
+      res.Data.Content = "You must provide more than one emoji choice for a fair poll"
+      res.Data.Flags = uint64(discordgo.MessageFlagsEphemeral)
+      return
     }
 
-    // delete the message that triggered the command
-    err := data.Bot.Session.ChannelMessageDelete(
-      data.Msg.ChannelID,
-      data.Msg.ID,
-    )
-    if err != nil { return nil, err }
+    // Acknowledge the interaction
+    res.Type = discordgo.InteractionResponseDeferredChannelMessageWithSource
+    err = data.Bot.Session.InteractionRespond(data.Interaction, res)
+    if err != nil { return }
 
     // create the embed
     embed := &discordgo.MessageEmbed {
       Title: "Poll",
-      Footer: &discordgo.MessageEmbedFooter{
-        Text: "Sent by " + data.Msg.Author.Username,
-      },
       Description: content,
     }
 
     // send the poll
-    pollMsg, err := data.Bot.Session.ChannelMessageSendEmbed(
-      data.Msg.ChannelID,
-      embed,
+    pollMsg, err := data.Bot.Session.FollowupMessageCreate(
+      data.Interaction,
+      true,
+      &discordgo.WebhookParams{ Embeds: []*discordgo.MessageEmbed{ embed } },
     )
-    if err != nil { return nil, err }
+    if err != nil { return }
 
     // add emoji reactions (the poll choices)
     for _, e := range emojis {
@@ -71,10 +69,11 @@ var Poll = &cmd.Command{
         pollMsg.ID,
         e.Match.(emoji.Emoji).Value,
       )
-      if err != nil { return nil, err }
+      if err != nil { return }
     }
 
     // no response necessary (the poll kinda was the response)
-    return nil, nil
+    res = nil
+    return
   },
-}
+})

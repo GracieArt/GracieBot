@@ -24,7 +24,7 @@ func (man *CmdManager) stdCmd_help() *Command {
     },
 
 
-    Run: func (data Call) (*discordgo.MessageSend, error) {
+    Run: func (data CallData) (*discordgo.MessageSend, error) {
       response := &discordgo.MessageSend{}
 
       // no name provided

@@ -16,7 +16,7 @@ func (man *CmdManager) stdCmd_commands() *Command {
 
   return &Command{
     Name: cmdName,
-    Group: "information",
+    Group: "utility",
     Description: "Displays a list of available commands.",
     Args: []Arg{
       Arg{
@@ -30,7 +30,7 @@ func (man *CmdManager) stdCmd_commands() *Command {
     },
 
 
-    Run: func (data Call) (*discordgo.MessageSend, error) {
+    Run: func (data CallData) (*discordgo.MessageSend, error) {
       response := &discordgo.MessageSend{}
 
 

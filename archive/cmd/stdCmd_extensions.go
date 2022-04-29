@@ -14,11 +14,11 @@ func (man *CmdManager) stdCmd_extensions() *Command {
 
   return &Command{
     Name: thisCmdName,
-    Group: "utility",
+    Group: "information",
     Description: "Lists all registered extensions.",
     // need to add arg for page number, but will do that later when pagination is seperated
 
-    Run: func (data Call) (*discordgo.MessageSend, error) {
+    Run: func (data CallData) (*discordgo.MessageSend, error) {
       response := &discordgo.MessageSend{
         Embeds: []*discordgo.MessageEmbed{
           &discordgo.MessageEmbed{

@@ -16,12 +16,14 @@ const (
 )
 
 
-type CmdHandler func(Call) (*discordgo.MessageSend, error)
+type CmdHandler func(CallData) (*discordgo.MessageSend, error)
 
-type Call struct {
+type ArgVals map[string]any
+
+type CallData struct {
   Prefix string
   Msg *discordgo.Message
-  Args map[string]interface{}
+  Args ArgVals
   Bot *core.Bot
 }
 
@@ -30,6 +32,7 @@ type Call struct {
 type Arg struct {
   Key string
   Type ArgType
+  Required bool
 }
 
 
