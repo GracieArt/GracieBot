@@ -12,14 +12,14 @@ import (
 
 
 type Like struct {
-  id string
+  extensionID string
+  extensionInfo core.ExtensionInfo
   bot *core.Bot
   emoji *emoji.Emoji
-  info core.ExtensionInfo
 }
 
-func (l *Like) ID() string { return l.id }
-func (l *Like) Info() core.ExtensionInfo { return l.info }
+func (l *Like) ExtensionID() string { return l.extensionID }
+func (l *Like) ExtensionInfo() core.ExtensionInfo { return l.extensionInfo }
 
 
 type Config struct {
@@ -29,9 +29,9 @@ type Config struct {
 
 func New(cnf Config) *Like {
   l := &Like{
-    id: "graciebell.art.like",
+    extensionID: "graciebell.art.like",
     emoji: &emoji.YellowHeart,
-    info: core.ExtensionInfo {
+    extensionInfo: core.ExtensionInfo {
       Name: "Like",
       Description: "Adds a like button to every message that contains media.",
     },
@@ -50,7 +50,9 @@ func (l *Like) Load(b *core.Bot) error {
   return nil
 }
 
-func (l *Like) OnConnect() {} // satisfy extension interface
+
+// satisfy extension interface
+func (l *Like) OnLifecycleEvent(core.LifecycleEvent) error { return nil }
 
 
 func (l *Like) AddLike(m *discordgo.Message) {

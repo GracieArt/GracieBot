@@ -31,17 +31,17 @@ type PostMeta struct {
 
 
 type GraciePost struct {
-  id string
+  extensionID string
+  extensionInfo core.ExtensionInfo
   bot *core.Bot
   port string
   charLimit int
   ext_like *like.Like
   key string
-  info core.ExtensionInfo
 }
 
-func (g *GraciePost) ID() string { return g.id }
-func (g *GraciePost) Info() core.ExtensionInfo { return g.info }
+func (g *GraciePost) ExtensionID() string { return g.extensionID }
+func (g *GraciePost) ExtensionInfo() core.ExtensionInfo { return g.extensionInfo }
 
 
 type Config struct {
@@ -53,11 +53,11 @@ type Config struct {
 
 func New(cnf Config) *GraciePost {
   gp := &GraciePost{
-    id : "graciebell.art.graciepost",
+    extensionID : "graciebell.art.graciepost",
     port : "30034",
     charLimit : 180,
     key : cnf.Key,
-    info: core.ExtensionInfo{
+    extensionInfo: core.ExtensionInfo{
       Name: "GraciePost",
       Description: "Post images from your browser using the GraciePost Firefox extension.",
     },
@@ -110,7 +110,16 @@ func (g *GraciePost) Load(b *core.Bot) error {
 
 
 
-func (g *GraciePost) OnConnect() {
+func (g *GraciePost) OnLifecycleEvent(l core.LifecycleEvent) error {
+  switch l {
+  case core.LE_Connect:
+    go g.listen()
+  }
+  return nil
+}
+
+
+func (g *GraciePost) listen() {
   log.Fatal(http.ListenAndServe(":" + g.port, nil))
 }
 
