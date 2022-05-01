@@ -10,7 +10,7 @@ import (
   "github.com/bwmarrin/discordgo"
   "github.com/gracieart/bubblebot"
 
-  "github.com/gracieart/graciebot/src/extensions/like"
+  "github.com/gracieart/graciebot/src/lib/toys/like"
   "github.com/thoas/go-funk"
 )
 
@@ -31,17 +31,17 @@ type PostMeta struct {
 
 
 type GraciePost struct {
-  extensionID string
-  extensionInfo bubble.ExtensionInfo
+  toyID string
+  toyInfo bubble.ToyInfo
   bot *bubble.Bot
   port string
   charLimit int
-  ext_like *like.Like
+  like *like.Like
   key string
 }
 
-func (g *GraciePost) ExtensionID() string { return g.extensionID }
-func (g *GraciePost) ExtensionInfo() bubble.ExtensionInfo { return g.extensionInfo }
+func (g *GraciePost) ToyID() string { return g.toyID }
+func (g *GraciePost) ToyInfo() bubble.ToyInfo { return g.toyInfo }
 
 
 type Config struct {
@@ -53,13 +53,13 @@ type Config struct {
 
 func New(cnf Config) *GraciePost {
   gp := &GraciePost{
-    extensionID : "graciebell.art.graciepost",
+    toyID : "graciebell.art.graciepost",
     port : "30034",
     charLimit : 180,
     key : cnf.Key,
-    extensionInfo: bubble.ExtensionInfo{
+    toyInfo: bubble.ToyInfo{
       Name: "GraciePost",
-      Description: "Post images from your browser using the GraciePost Firefox extension.",
+      Description: "Post images from your browser using the GraciePost Firefox toy.",
     },
   }
   if cnf.Port != "" { gp.port = cnf.Port }
@@ -71,8 +71,8 @@ func New(cnf Config) *GraciePost {
 func (g *GraciePost) Load(b *bubble.Bot) error {
   g.bot = b
 
-  if l, ok := g.bot.FindExtension("graciebell.art.like"); ok {
-    g.ext_like = l.(*like.Like)
+  if l, ok := g.bot.FindToy("graciebell.art.like"); ok {
+    g.like = l.(*like.Like)
   }
 
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +112,7 @@ func (g *GraciePost) Load(b *bubble.Bot) error {
 
 func (g *GraciePost) OnLifecycleEvent(l bubble.LifecycleEvent) error {
   switch l {
-  case bubble.LE_Connect:
+  case bubble.Connect:
     go g.listen()
   }
   return nil
@@ -130,7 +130,7 @@ func (g *GraciePost) Post(meta PostMeta) {
   if err != nil { fmt.Printf("GraciePost: %s", err) }
 
   // add like button if the plugin is connected
-  if g.ext_like != nil { g.ext_like.AddLike(msg) }
+  if g.like != nil { g.like.AddLike(msg) }
 }
 
 
@@ -195,7 +195,7 @@ type MenuLevel struct {
   Items []Menu `json:"items"`
 }
 
-// get the object with all the menus to send back to the GraciePost extension
+// get the object with all the menus to send back to the GraciePost toy
 func (g *GraciePost) GetChannels() []byte {
   // get guilds. (have to do it this way kuz the guilds in State.Ready
   // are not populated with the channels)

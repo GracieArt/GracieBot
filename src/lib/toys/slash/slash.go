@@ -8,22 +8,22 @@ import (
 
 
 type Slash struct {
-  extensionID string
-  extensionInfo bubble.ExtensionInfo
+  toyID string
+  toyInfo bubble.ToyInfo
   bot *bubble.Bot
   cmdsToRegister []*Command
   commands map[string]*Command
   cmdsByCat map[string][]*Command
 }
 
-func (s *Slash) ExtensionID() string { return s.extensionID }
-func (s *Slash) ExtensionInfo() bubble.ExtensionInfo { return s.extensionInfo }
+func (s *Slash) ToyID() string { return s.toyID }
+func (s *Slash) ToyInfo() bubble.ToyInfo { return s.toyInfo }
 
 
 func New(cmds ...*Command) (*Slash) {
   return &Slash{
-    extensionID: "graciebell.art.slash",
-    extensionInfo: bubble.ExtensionInfo{
+    toyID: "graciebell.art.slash",
+    toyInfo: bubble.ToyInfo{
       Name: "Slash Commands",
       Description: "Add interactive chat commands to your bot in a way " +
         "that's integrated with the Discord UI."},
@@ -48,10 +48,10 @@ func (s *Slash) OnLifecycleEvent(
   err error,
 ) {
   switch l {
-  case bubble.LE_Connect:
+  case bubble.Connect:
     err = s.registerCommands()
 
-  case bubble.LE_Close:
+  case bubble.Close:
     err = s.removeAllCommands()
   }
   return

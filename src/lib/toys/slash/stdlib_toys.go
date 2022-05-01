@@ -9,11 +9,11 @@ import (
 
 
 // Sends a list of all the registered extensions
-func (s *Slash) stdlib_extensions() *Command {
+func (s *Slash) stdlib_toys() *Command {
   return NewCommand(CmdConfig{
-    Name: "extensions",
+    Name: "toys",
     Category: "information",
-    Description: "List all registered extensions.",
+    Description: "List all registered toys.",
     // need to add arg for page number, but will do that later when pagination is seperated
 
     Handle: func (
@@ -27,12 +27,12 @@ func (s *Slash) stdlib_extensions() *Command {
       )
 
       embed := &discordgo.MessageEmbed{
-        Title: "Extensions",
-        Description: "The following extensions are registered with this bot:",
+        Title: "Toys",
+        Description: "The following toys are registered with this bot:",
         Fields: funk.Map(
-          s.bot.Extensions(),
-          func (e bubble.Extension) *discordgo.MessageEmbedField {
-            info := e.ExtensionInfo()
+          s.bot.Toys(),
+          func (e bubble.Toy) *discordgo.MessageEmbedField {
+            info := e.ToyInfo()
             return &discordgo.MessageEmbedField{
               info.Name, info.Description, false,
             }

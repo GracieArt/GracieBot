@@ -5,42 +5,26 @@ import (
   "os"
 
   "github.com/gracieart/bubblebot"
-  "github.com/gracieart/graciebot/src/extensions/slash"
-  "github.com/gracieart/graciebot/src/extensions/like"
-  "github.com/gracieart/graciebot/src/extensions/graciepost"
-  "github.com/gracieart/graciebot/src/setup/commands"
+  "github.com/gracieart/graciebot/src/lib/toys"
 
   "github.com/joho/godotenv"
-  "github.com/enescakir/emoji"
 )
 
 
 func main() {
+  // Load environment variables
   if err := godotenv.Load(); err != nil {
     panic(fmt.Errorf("error loading .env file: %w", err))
   }
 
-
-  Slash := slash.New( commands.Poll )
-
-  Like := like.New(like.Config{
-    Emoji: &emoji.YellowHeart,
-  })
-
-  GraciePost := graciepost.New(graciepost.Config{
-    Key: os.Getenv("GRACIEPOST_KEY"),
-  })
-
-
+  // Initialize the bot
 	GracieBot, err := bubble.NewBot(bubble.Config{
+    Name: "GracieBot",
     Token: os.Getenv("DISCORD_API_TOKEN"),
-    Extensions: []bubble.Extension{
-      Slash,
-      GraciePost,
-      Like,
-    },
+    Toys: toys.Toys,
   })
 	if err != nil { panic(fmt.Errorf("error creating bot: %w", err)) }
 
-	GracieBot.Connect()
+  // Start the bot
+	GracieBot.Start()
 }

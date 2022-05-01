@@ -1,6 +1,10 @@
 package slash
 
 import (
+  "fmt"
+
+  "github.com/gracieart/bubblebot"
+
   "github.com/bwmarrin/discordgo"
 )
 
@@ -39,14 +43,20 @@ func (s *Slash) handleCommand(
     res, err := c.Handle(data)
 
     if err != nil {
-      err = sesh.InteractionRespond(i.Interaction, ErrorResponse(
+      err := sesh.InteractionRespond(i.Interaction, ErrorResponse(
         "Encountered an error while running the command.", err.Error()))
-      if err != nil { panic(err) }
+      if err != nil {
+        bubble.Log(bubble.Error, s.toyID, fmt.Sprint(
+          "Error responding to interaction: ", err))
+      }
     }
 
     if res != nil {
-      err = sesh.InteractionRespond(i.Interaction, res)
-      if err != nil { panic(err) }
+      err := sesh.InteractionRespond(i.Interaction, res)
+      if err != nil {
+        bubble.Log(bubble.Error, s.toyID, fmt.Sprint(
+          "Error responding to interaction: ", err))
+      }
     }
   }
 }

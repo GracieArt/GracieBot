@@ -12,14 +12,14 @@ import (
 
 
 type Like struct {
-  extensionID string
-  extensionInfo bubble.ExtensionInfo
+  toyID string
+  toyInfo bubble.ToyInfo
   bot *bubble.Bot
   emoji *emoji.Emoji
 }
 
-func (l *Like) ExtensionID() string { return l.extensionID }
-func (l *Like) ExtensionInfo() bubble.ExtensionInfo { return l.extensionInfo }
+func (l *Like) ToyID() string { return l.toyID }
+func (l *Like) ToyInfo() bubble.ToyInfo { return l.toyInfo }
 
 
 type Config struct {
@@ -29,9 +29,9 @@ type Config struct {
 
 func New(cnf Config) *Like {
   l := &Like{
-    extensionID: "graciebell.art.like",
+    toyID: "graciebell.art.like",
     emoji: &emoji.YellowHeart,
-    extensionInfo: bubble.ExtensionInfo {
+    toyInfo: bubble.ToyInfo {
       Name: "Like",
       Description: "Adds a like button to every message that contains media.",
     },
@@ -51,7 +51,7 @@ func (l *Like) Load(b *bubble.Bot) error {
 }
 
 
-// satisfy extension interface
+// satisfy toy interface
 func (l *Like) OnLifecycleEvent(bubble.LifecycleEvent) error { return nil }
 
 

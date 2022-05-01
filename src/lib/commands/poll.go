@@ -2,7 +2,7 @@ package commands
 
 import (
   "github.com/bwmarrin/discordgo"
-  "github.com/gracieart/graciebot/src/extensions/slash"
+  "github.com/gracieart/graciebot/src/lib/toys/slash"
 
   "github.com/tmdvs/Go-Emoji-Utils"
 )
