@@ -15,6 +15,8 @@ github.com/gracieart/bubblebot v0.2.0 h1:g13lrHGJrmcDedtYkUMwpXTA8yADX2Om1M2mpx1
 github.com/gracieart/bubblebot v0.2.0/go.mod h1:g+v9tMOheepKv58yfM+MWlPDmFdvdPZaOBKgnPAWy3o=
 github.com/gracieart/bubblebot v0.2.1 h1:XvgAmRbwfhg9liW6feQzqaGIzTPRTARV2eHX+JycV0A=
 github.com/gracieart/bubblebot v0.2.1/go.mod h1:g+v9tMOheepKv58yfM+MWlPDmFdvdPZaOBKgnPAWy3o=
+github.com/gracieart/bubblebot v0.2.2 h1:1tpV/uW2mJJ+35m1E9NrcMF8nIichmsQr0/c/VsOPOQ=
+github.com/gracieart/bubblebot v0.2.2/go.mod h1:g+v9tMOheepKv58yfM+MWlPDmFdvdPZaOBKgnPAWy3o=
 github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=
 github.com/joho/godotenv v1.4.0/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
 github.com/mattn/go-colorable v0.1.9 h1:sqDoxXbdeALODt0DAeJCVp38ps9ZogZEAXjus69YV3U=

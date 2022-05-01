@@ -42,17 +42,13 @@ func (s *Slash) Load(b *bubble.Bot) error {
 
 
 
-func (s *Slash) OnLifecycleEvent(
-  l bubble.LifecycleEvent,
-) (
-  err error,
-) {
+func (s *Slash) OnLifecycleEvent(l bubble.LifecycleEvent) {
   switch l {
   case bubble.Connect:
-    err = s.registerCommands()
+    s.registerCommands()
 
   case bubble.Close:
-    err = s.removeAllCommands()
+    s.removeAllCommands()
   }
   return
 }

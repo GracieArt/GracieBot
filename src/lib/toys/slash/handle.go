@@ -24,7 +24,7 @@ func (s *Slash) handleCommand(
       Interaction: i.Interaction,
     }
 
-    // format option values into string map
+    // formats option values into string map
     data.Options = make(
       map[string]*discordgo.ApplicationCommandInteractionDataOption,
       len(appCmdData.Options) )
@@ -43,26 +43,18 @@ func (s *Slash) handleCommand(
     res, err := c.Handle(data)
 
     if err != nil {
-      err := sesh.InteractionRespond(i.Interaction, ErrorResponse(
+      s.respond(i.Interaction, errorResponse(
         "Encountered an error while running the command.", err.Error()))
-      if err != nil {
-        bubble.Log(bubble.Error, s.toyID, fmt.Sprint(
-          "Error responding to interaction: ", err))
-      }
     }
 
     if res != nil {
-      err := sesh.InteractionRespond(i.Interaction, res)
-      if err != nil {
-        bubble.Log(bubble.Error, s.toyID, fmt.Sprint(
-          "Error responding to interaction: ", err))
-      }
+      s.respond(i.Interaction, res)
     }
   }
 }
 
 
-func ErrorResponse(errMsg, details string) *discordgo.InteractionResponse {
+func errorResponse(errMsg, details string) *discordgo.InteractionResponse {
   embed := &discordgo.MessageEmbed{
     Color: 15483205,
     Title: "Error",
@@ -82,4 +74,15 @@ func ErrorResponse(errMsg, details string) *discordgo.InteractionResponse {
       Embeds: []*discordgo.MessageEmbed{ embed },
     },
   }
+}
+
+
+func (s *Slash) respond(
+  i *discordgo.Interaction,
+  res *discordgo.InteractionResponse,
+) {
+  err := s.bot.Session.InteractionRespond(i, res)
+  if err == nil { return }
+  bubble.Log(bubble.Warning, s.toyID,
+    fmt.Sprint("Failed to respond to interaction: ", err) )
 }

@@ -52,7 +52,7 @@ func (l *Like) Load(b *bubble.Bot) error {
 
 
 // satisfy toy interface
-func (l *Like) OnLifecycleEvent(bubble.LifecycleEvent) error { return nil }
+func (l *Like) OnLifecycleEvent(bubble.LifecycleEvent) {}
 
 
 func (l *Like) AddLike(m *discordgo.Message) {
