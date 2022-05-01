@@ -59,7 +59,7 @@ func New(cnf Config) *GraciePost {
     key : cnf.Key,
     toyInfo: bubble.ToyInfo{
       Name: "GraciePost",
-      Description: "Post images from your browser using the GraciePost Firefox toy.",
+      Description: "Post images from your browser using the GraciePost Firefox extension.",
     },
   }
   if cnf.Port != "" { gp.port = cnf.Port }
