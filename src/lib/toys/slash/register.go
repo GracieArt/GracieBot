@@ -14,6 +14,7 @@ func (s *Slash) registerCommands() {
     s.stdlib_help(),
     s.stdlib_commands(),
     s.stdlib_toys(),
+    //s.stdlib_about(),
   }
 
   s.cmdsToRegister = append(s.cmdsToRegister, stdlib...)
@@ -30,7 +31,8 @@ func (s *Slash) removeAllCommands() {
   bubble.Log(bubble.Info, s.toyID, "Removing commands")
 
   for _, c := range s.commands {
-    err := s.bot.Session.ApplicationCommandDelete(s.bot.UserID(), "", c.appCmd.ID)
+    err := s.bot.Session.ApplicationCommandDelete(
+      s.bot.UserID(), s.guild, c.appCmd.ID)
     if err != nil {
       bubble.Log(bubble.Warning, s.toyID,
         fmt.Sprintf("Failed to delete %q command: %v", c.appCmd.Name, err) )
@@ -52,7 +54,7 @@ func (s *Slash) RegisterCommands(commands ...*Command) (registeredAll bool) {
     }
 
     cmd, err := s.bot.Session.ApplicationCommandCreate(
-      s.bot.UserID(), "", c.appCmd)
+      s.bot.UserID(), s.guild, c.appCmd)
     if err != nil {
       bubble.Log(bubble.Warning, s.toyID,
         fmt.Sprintf("Failed to create %q command: %v", c.appCmd.Name, err) )

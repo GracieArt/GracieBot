@@ -12,22 +12,27 @@ import (
   "github.com/enescakir/emoji"
 )
 
+type Config struct {
+  DevMode bool
+  GraciePostKey string
+}
 
-var Toys []bubble.Toy
 
-
-func init() {
-  Slash := slash.New( commands.Poll )
+func Toys(conf Config) []bubble.Toy {
+  Slash := slash.New( slash.Config{
+    Commands: []*slash.Command{ commands.Poll },
+    DevMode: conf.DevMode,
+  } )
 
   GraciePost := graciepost.New(graciepost.Config{
-    Key: os.Getenv("GRACIEPOST_KEY"),
+    Key: conf.GraciePostKey,
   })
 
   Like := like.New(like.Config{
     Emoji: &emoji.YellowHeart,
   })
 
-  Toys = []bubble.Toy{
+  return []bubble.Toy{
     Slash,
     GraciePost,
     Like,
