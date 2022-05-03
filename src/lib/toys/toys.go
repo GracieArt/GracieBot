@@ -1,8 +1,6 @@
 package toys
 
 import (
-  "os"
-
   "github.com/gracieart/bubblebot"
   "github.com/gracieart/graciebot/src/lib/toys/slash"
   "github.com/gracieart/graciebot/src/lib/toys/graciepost"

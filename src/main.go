@@ -15,11 +15,13 @@ import (
 // Varaibles used for command line parameters
 var (
   HideTimestamps bool
+  DevMode bool
 )
 
 
 func init() {
   flag.BoolVar(&HideTimestamps, "hidets", false, "hide timestamps")
+  flag.BoolVar(&DevMode, "dev", false, "developer mode")
   flag.Parse()
 }
 
@@ -34,7 +36,9 @@ func main() {
 	GracieBot, err := bubble.NewBot(bubble.Config{
     Name: "GracieBot",
     Token: os.Getenv("DISCORD_API_TOKEN"),
-    Toys: toys.Toys,
+    Toys: toys.Toys( toys.Config{
+      DevMode: DevMode,
+      GracoePostKey: os.Getenv("GRACIEPOST_KEY") } ),
     HideTimestamps: HideTimestamps,
   })
 	if err != nil { panic(fmt.Errorf("error creating bot: %w", err)) }
