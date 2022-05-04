@@ -3,6 +3,7 @@ package graciepost
 import (
   "encoding/json"
   "net/http"
+  "log"
   "time"
 
   "github.com/gracieart/bubblebot"
@@ -31,9 +32,12 @@ func (g *GraciePost) HandleRequest(w http.ResponseWriter, r *http.Request) {
     }
 
     if meta.Key != g.key {
+	log.Print("Given Key" + meta.Key)
+	log.Print("Graciepost Key: " + g.key)
       http.Error(w, "401 unauthorized.", http.StatusUnauthorized)
       return
     }
+
     g.Post(meta)
 
 

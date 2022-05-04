@@ -3,7 +3,6 @@ package graciepost
 
 import (
   "strings"
-
   "github.com/bwmarrin/discordgo"
   "github.com/gracieart/bubblebot"
 
@@ -12,7 +11,7 @@ import (
 
 
 func (g *GraciePost) Post(meta PostMeta) {
-  // send the message and save the struct to add a like button to it later
+// send the message and save the struct to add a like button to it later
   msg, err := g.bot.Session.ChannelMessageSendComplex(
     meta.Channel, g.createMsg(meta) )
 

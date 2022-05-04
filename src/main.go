@@ -38,7 +38,7 @@ func main() {
     Token: os.Getenv("DISCORD_API_TOKEN"),
     Toys: toys.Toys( toys.Config{
       DevMode: DevMode,
-      GracoePostKey: os.Getenv("GRACIEPOST_KEY") } ),
+      GraciePostKey: os.Getenv("GRACIEPOST_KEY") } ),
     HideTimestamps: HideTimestamps,
   })
 	if err != nil { panic(fmt.Errorf("error creating bot: %w", err)) }

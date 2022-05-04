@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/bwmarrin/discordgo v0.25.0
 	github.com/enescakir/emoji v1.0.0
-	github.com/gracieart/bubblebot v0.2.2
+	github.com/gracieart/bubblebot v0.2.3
 	github.com/joho/godotenv v1.4.0
 	github.com/thoas/go-funk v0.9.2
 	github.com/tmdvs/Go-Emoji-Utils v1.1.0
