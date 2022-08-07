@@ -3,11 +3,18 @@ package graciepost
 
 import (
   "strings"
+  "regexp"
   "github.com/bwmarrin/discordgo"
   "github.com/gracieart/bubblebot"
-
-  "github.com/thoas/go-funk"
 )
+
+
+var collapseWhitespace *regexp.Regexp
+
+
+func init() {
+  collapseWhitespace = regexp.MustCompile(`(\r\s?|\s){2,}`)
+}
 
 
 func (g *GraciePost) Post(meta PostMeta) {
@@ -26,21 +33,28 @@ func (g *GraciePost) Post(meta PostMeta) {
 }
 
 
+// creates and sends the message to the appropriate channel
 func (g *GraciePost) createMsg(meta PostMeta) *discordgo.MessageSend {
-  // just return the link if its set to override embed
+  // just return the link if its set to override the embed
   if meta.OverrideEmbed {
     return &discordgo.MessageSend{ Content: meta.PostLink }
   }
 
   // Truncate the description (if any)
   if len(meta.Desc) > 0 {
-    cutoff := 0
-    // set cutoff point at the first double linebreak (if any)
-    if i := strings.Index(meta.Desc, "\n\n"); i != -1 { cutoff = i }
-    // set cutoff point to the CharLimit if it exceeds it
-    cutoff = funk.MinInt( []int{ cutoff, g.charLimit } )
-    // truncate the string if cutoff was set
-    if cutoff > 0 { meta.Desc = meta.Desc[:cutoff] + " ..." }
+    // collapse consecutive whitespace characters
+    meta.Desc = collapseWhitespace.ReplaceAllString(meta.Desc, "$1")
+
+    // truncate string if more than 2 newlines
+    newlines := strings.Count(meta.Desc, "\n")
+    if newlines > 2 {
+      meta.Desc = strings.Join(strings.SplitN(meta.Desc, "\n", 2), "\n")
+    }
+
+    // truncate the string if more than the char limit
+    if len(meta.Desc) > g.charLimit {
+      meta.Desc = meta.Desc[:g.charLimit] + " ..."
+    }
   }
 
   // create & send the embed
