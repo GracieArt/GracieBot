@@ -4,8 +4,17 @@ import (
   "github.com/bwmarrin/discordgo"
   "github.com/gracieart/graciebot/src/lib/toys/slash"
 
-  "github.com/tmdvs/Go-Emoji-Utils"
+  "strings"
+  "strconv"
+
+  emojiUtils "github.com/tmdvs/Go-Emoji-Utils"
 )
+
+
+type Choice struct {
+  emoji string
+  label string
+}
 
 
 var Poll = slash.NewCommand(slash.CmdConfig{
@@ -15,9 +24,29 @@ var Poll = slash.NewCommand(slash.CmdConfig{
   Options: []*discordgo.ApplicationCommandOption{
     {
       Type: discordgo.ApplicationCommandOptionString,
-      Name: "content",
-      Description: "The content of the poll",
+      Name: "title",
+      Description: "The title of the poll",
       Required: true },
+    {
+      Type: discordgo.ApplicationCommandOptionString,
+      Name: "choice1",
+      Description: "First choice",
+      Required: true },
+    {
+      Type: discordgo.ApplicationCommandOptionString,
+      Name: "choice2",
+      Description: "Second choice",
+      Required: true },
+    {
+      Type: discordgo.ApplicationCommandOptionString,
+      Name: "choice3",
+      Description: "Third choice",
+      Required: false },
+    {
+      Type: discordgo.ApplicationCommandOptionString,
+      Name: "choice4",
+      Description: "Fourth choice",
+      Required: false },
   },
 
   Handle: func (
@@ -28,31 +57,50 @@ var Poll = slash.NewCommand(slash.CmdConfig{
   ) {
     res = slash.NewInteractionResponse(discordgo.InteractionResponseChannelMessageWithSource)
 
-    content := data.Options["content"].StringValue()
 
-    // find emojis
-    emojis := emoji.FindAll(content)
-    switch len(emojis) {
-    case 0:
-      res.Data.Content = "You must use emojis for the poll choices"
-      res.Data.Flags = uint64(discordgo.MessageFlagsEphemeral)
-      return
-    case 1:
-      res.Data.Content = "You must provide more than one emoji choice for a fair poll"
-      res.Data.Flags = uint64(discordgo.MessageFlagsEphemeral)
-      return
+    //numberofChoices := len(data.Options)-1
+    var choices []Choice
+
+    // create the embed
+    embed := &discordgo.MessageEmbed {
+      Title: data.Options["title"].StringValue(),
+    }
+
+    // create list of choices
+    i := 0
+    for optName := range data.Options {
+      if !strings.HasPrefix(optName, "choice") { continue }
+      label := data.Options["choice"+strconv.Itoa(i+1)].StringValue()
+      // use emoji contained in the input, or use a number emoji if none
+      emojis := emojiUtils.FindAll(label)
+      emoji := ""
+      if len(emojis) > 0 {
+        emoji = emojis[0].Match.(emojiUtils.Emoji).Value
+      } else {
+        switch i {
+        case 0:
+          emoji = "1️⃣"
+        case 1:
+          emoji = "2️⃣"
+        case 2:
+          emoji = "3️⃣"
+        case 3:
+          emoji = "4️⃣"
+        }
+        label = emoji + " " + label
+      }
+      embed.Description = embed.Description + label + "\n"
+      choices = append(choices, Choice{
+        emoji,
+        label,
+      })
+      i++
     }
 
     // Acknowledge the interaction
     res.Type = discordgo.InteractionResponseDeferredChannelMessageWithSource
     err = data.Bot.Session.InteractionRespond(data.Interaction, res)
     if err != nil { return }
-
-    // create the embed
-    embed := &discordgo.MessageEmbed {
-      Title: "Poll",
-      Description: content,
-    }
 
     // send the poll
     pollMsg, err := data.Bot.Session.FollowupMessageCreate(
@@ -62,12 +110,12 @@ var Poll = slash.NewCommand(slash.CmdConfig{
     )
     if err != nil { return }
 
-    // add emoji reactions (the poll choices)
-    for _, e := range emojis {
+    // add emoji reactions for each poll choice
+    for _, choice := range choices {
       err = data.Bot.Session.MessageReactionAdd(
         pollMsg.ChannelID,
         pollMsg.ID,
-        e.Match.(emoji.Emoji).Value,
+        choice.emoji,
       )
       if err != nil { return }
     }
