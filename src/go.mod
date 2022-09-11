@@ -3,7 +3,7 @@ module github.com/gracieart/graciebot/src
 go 1.18
 
 require (
-	github.com/bwmarrin/discordgo v0.25.0
+	github.com/bwmarrin/discordgo v0.26.1
 	github.com/enescakir/emoji v1.0.0
 	github.com/gracieart/bubblebot v0.2.3
 	github.com/joho/godotenv v1.4.0
