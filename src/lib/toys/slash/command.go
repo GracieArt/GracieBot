@@ -6,11 +6,13 @@ import (
   "github.com/gracieart/bubblebot"
 )
 
+var adminPermission int64 = discordgo.PermissionAdministrator
 
 type Command struct {
   appCmd *discordgo.ApplicationCommand
   category string
   Handle CmdHandler
+  //allowedInDMs *bool
 }
 
 
@@ -20,10 +22,18 @@ func NewCommand(conf CmdConfig) *Command {
       Name: conf.Name,
       Description: conf.Description,
       Options: conf.Options,
+      DMPermission: new(bool),
     },
     category: conf.Category,
     Handle: conf.Handle,
   }
+
+  *cmd.appCmd.DMPermission = !conf.GuildOnly
+
+  if conf.AdminOnly == true {
+    cmd.appCmd.DefaultMemberPermissions = &adminPermission
+  }
+
   return cmd
 }
 
@@ -34,6 +44,8 @@ type CmdConfig struct {
   Name, Description, Category string
   Options []*discordgo.ApplicationCommandOption
   Handle CmdHandler
+  AdminOnly bool
+  GuildOnly bool
 }
 
 
@@ -44,6 +56,7 @@ type CmdData struct {
   Invoker CmdInvoker
   Options map[string]*discordgo.ApplicationCommandInteractionDataOption
   Interaction *discordgo.Interaction
+  SubcommandName, NestedSubcommandName string
 }
 
 
