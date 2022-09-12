@@ -1,4 +1,4 @@
-package commands
+package fun
 
 import (
   "github.com/bwmarrin/discordgo"
@@ -19,7 +19,7 @@ var (
 var Minesweeper = slash.NewCommand(slash.CmdConfig{
   Name: "minesweeper",
   Category: "fun",
-  Description: "Generates a minesweeper puzzle",
+  Description: "Generate a minesweeper puzzle",
 
   Handle: func (
     data slash.CmdData,

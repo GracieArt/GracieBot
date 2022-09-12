@@ -7,6 +7,12 @@ import (
   "fmt"
 )
 
+func (b *Bellhop) Commands() []*slash.Command {
+  return []*slash.Command{
+    b.Cmd_welcome(),
+  }
+}
+
 func (b *Bellhop) Cmd_welcome() *slash.Command {
   return slash.NewCommand(slash.CmdConfig{
     Name: "welcome",

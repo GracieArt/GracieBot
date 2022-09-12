@@ -6,7 +6,8 @@ import (
   "github.com/gracieart/graciebot/src/lib/toys/graciepost"
   "github.com/gracieart/graciebot/src/lib/toys/like"
   "github.com/gracieart/graciebot/src/lib/toys/bellhop"
-  "github.com/gracieart/graciebot/src/lib/commands"
+
+  "github.com/gracieart/graciebot/src/lib/commands/fun"
 
   "github.com/enescakir/emoji"
 )
@@ -20,13 +21,12 @@ type Config struct {
 func Toys(conf Config) []bubble.Toy {
   Bellhop := bellhop.New()
 
+  c := []*slash.Command{}
+  c = append(c, fun.Commands()...)
+  c = append(c, Bellhop.Commands()...)
+
   Slash := slash.New( slash.Config{
-    Commands: []*slash.Command{
-      commands.Poll,
-      commands.Minesweeper,
-      commands.EightBall,
-      Bellhop.Cmd_welcome(),
-    },
+    Commands: c,
     DevMode: conf.DevMode,
   } )
 

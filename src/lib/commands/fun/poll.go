@@ -1,4 +1,4 @@
-package commands
+package fun
 
 import (
   "github.com/bwmarrin/discordgo"
@@ -20,7 +20,7 @@ type Choice struct {
 var Poll = slash.NewCommand(slash.CmdConfig{
   Name: "poll",
   Category: "fun",
-  Description: "Makes a quick reaction poll",
+  Description: "Make a quick reaction poll",
   Options: []*discordgo.ApplicationCommandOption{
     {
       Type: discordgo.ApplicationCommandOptionString,
