@@ -4,12 +4,9 @@ import (
   "github.com/gracieart/bubblebot"
   "github.com/gracieart/graciebot/src/lib/toys/slash"
   "github.com/gracieart/graciebot/src/lib/toys/graciepost"
-  "github.com/gracieart/graciebot/src/lib/toys/like"
   "github.com/gracieart/graciebot/src/lib/toys/bellhop"
 
   "github.com/gracieart/graciebot/src/lib/commands/fun"
-
-  "github.com/enescakir/emoji"
 )
 
 type Config struct {
@@ -34,14 +31,9 @@ func Toys(conf Config) []bubble.Toy {
     Key: conf.GraciePostKey,
   })
 
-  Like := like.New(like.Config{
-    Emoji: &emoji.YellowHeart,
-  })
-
   return []bubble.Toy{
     Slash,
     GraciePost,
-    Like,
     Bellhop,
   }
 }
