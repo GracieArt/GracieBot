@@ -7,6 +7,7 @@ import (
   "github.com/gracieart/graciebot/src/lib/toys/bellhop"
 
   "github.com/gracieart/graciebot/src/lib/commands/fun"
+  "github.com/gracieart/graciebot/src/lib/commands/mod"
 )
 
 type Config struct {
@@ -19,6 +20,7 @@ func Toys(conf Config) []bubble.Toy {
   Bellhop := bellhop.New()
 
   c := []*slash.Command{}
+  c = append(c, mod.Commands()...)
   c = append(c, fun.Commands()...)
   c = append(c, Bellhop.Commands()...)
 
