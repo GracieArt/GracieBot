@@ -15,6 +15,7 @@ type Like struct {
   toyID string
   toyInfo bubble.ToyInfo
   bot *bubble.Bot
+  storage *bubble.Storage
   emoji *emoji.Emoji
 }
 
@@ -40,13 +41,14 @@ func New(cnf Config) *Like {
   return l
 }
 
-func (l *Like) Load(b *bubble.Bot) error {
+func (l *Like) Load(b *bubble.Bot, s *bubble.Storage) error {
   b.AddMsgHandler(func (m *discordgo.MessageCreate) bool {
     if !containsMedia(m) || m.Author.Bot { return false }
     l.AddLike(m.Message)
     return true
   })
   l.bot = b
+  l.storage = s
   return nil
 }
 

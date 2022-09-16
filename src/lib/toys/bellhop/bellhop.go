@@ -3,7 +3,6 @@ package bellhop
 import (
   "github.com/gracieart/bubblebot"
   _"github.com/bwmarrin/discordgo"
-  "github.com/ostafen/clover"
 )
 
 
@@ -12,7 +11,7 @@ type Bellhop struct {
   toyInfo bubble.ToyInfo
   bot *bubble.Bot
 
-  storage *clover.DB
+  storage *bubble.Storage
 }
 
 func (b *Bellhop) ToyID() string { return b.toyID }
@@ -32,8 +31,9 @@ func New() *Bellhop {
 
 
 
-func (b *Bellhop) Load(bot *bubble.Bot) error {
+func (b *Bellhop) Load(bot *bubble.Bot, s *bubble.Storage) error {
   b.bot = bot
+  b.storage = s
 
   bot.Session.AddHandler(b.onJoin)
 

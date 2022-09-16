@@ -1,6 +1,7 @@
 package bellhop
 
 import (
+  "github.com/gracieart/bubblebot"
   "github.com/bwmarrin/discordgo"
   "github.com/gracieart/graciebot/src/lib/toys/slash"
   _"log"
@@ -116,16 +117,31 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
       err error,
     ) {
       res = slash.NewInteractionResponse(discordgo.InteractionResponseChannelMessageWithSource)
+
+      // get guild options, or make them if they dont exist yet
+      var guildOptions bubble.Entry
+      if !b.storage.HasGuild(data.GuildID) {
+        guild, err := b.bot.Session.Guild(data.GuildID)
+        if err != nil { return res, err }
+        guildOptions, err = bubble.InsertOne(b.storage, guild)
+        if err != nil { return res, err }
+      } else {
+        guildOptions, err = b.storage.Guild(data.GuildID)
+        if err != nil { return res, err }
+      }
+
       switch data.SubcommandName {
       case "create":
         joinMsg := data.Options["message"].StringValue()
         ch := data.Options["channel"].ChannelValue(b.bot.Session)
         shouldMention := data.Options["should-mention"].BoolValue()
 
-        b.bot.SetOption(b, data.GuildID, "join_message_enabled", true)
-        b.bot.SetOption(b, data.GuildID, "join_message", joinMsg)
-        b.bot.SetOption(b, data.GuildID, "join_message_channel", ch.ID)
-        b.bot.SetOption(b, data.GuildID, "join_message_should_mention", shouldMention)
+        guildOptions.Set("join_message_enabled", true)
+        guildOptions.Set("join_message", joinMsg)
+        guildOptions.Set("join_message_channel", ch.ID)
+        guildOptions.Set("join_message_should_mention", shouldMention)
+
+        b.storage.Save(guildOptions)
 
         if shouldMention { joinMsg = "\\@User " + joinMsg }
 
@@ -136,7 +152,7 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
 
 
       case "test":
-        enabled, _ := b.bot.Option(b, data.GuildID, "join_message_enabled")
+        enabled := guildOptions.Get("join_message_enabled")
         if enabled == nil || enabled.(bool) == false {
           res.Data.Flags = discordgo.MessageFlagsEphemeral
           res.Data.Content = fmt.Sprint(
@@ -146,7 +162,7 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
           break
         }
 
-        ch, _ := b.bot.Option(b, data.GuildID, "join_message_channel")
+        ch := guildOptions.Get("join_message_channel")
         if ch == nil {
           res.Data.Flags = discordgo.MessageFlagsEphemeral
           res.Data.Content = fmt.Sprint(
@@ -157,7 +173,7 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
         }
 
         data.Invoker.Member.GuildID = data.GuildID
-        b.sendJoinMsg(data.Invoker.Member)
+        b.sendJoinMsg(data.Invoker.Member, guildOptions)
 
         res.Data.Content = "Welcome message sent"
 
@@ -166,7 +182,7 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
         switch data.NestedSubcommandName {
         case "enabled":
           val := data.Options["value"].BoolValue()
-          b.bot.SetOption(b, data.GuildID, "join_message_enabled", val)
+          guildOptions.Set("join_message_enabled", val)
           if val {
             res.Data.Content = "Enabled welcome message"
           } else {
@@ -175,7 +191,7 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
 
         case "should-mention":
           val := data.Options["value"].BoolValue()
-          b.bot.SetOption(b, data.GuildID, "join_message_should_mention", val)
+          guildOptions.Set("join_message_should_mention", val)
           if val {
             res.Data.Content = "Welcome message will ping new users"
           } else {
@@ -184,14 +200,16 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
 
         case "channel":
           ch := data.Options["value"].ChannelValue(b.bot.Session)
-          b.bot.SetOption(b, data.GuildID, "channel", ch.ID)
+          guildOptions.Set("channel", ch.ID)
           res.Data.Content = "Welcome messages will be sent in " + ch.Mention()
 
         case "message":
           val := data.Options["value"].StringValue()
-          b.bot.SetOption(b, data.GuildID, "join_message", val)
+          guildOptions.Set("join_message", val)
           res.Data.Content = "Welcome message set to:\n> " + val
         }
+
+        b.storage.Save(guildOptions)
       }
 
 

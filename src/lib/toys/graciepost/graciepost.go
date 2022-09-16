@@ -25,6 +25,7 @@ type GraciePost struct {
   toyID string
   toyInfo bubble.ToyInfo
   bot *bubble.Bot
+  storage *bubble.Storage
   port string
   charLimit int
   like *like.Like
@@ -60,8 +61,9 @@ func New(cnf Config) *GraciePost {
 
 
 
-func (g *GraciePost) Load(b *bubble.Bot) error {
+func (g *GraciePost) Load(b *bubble.Bot, s *bubble.Storage) error {
   g.bot = b
+  g.storage = s
 
   if l, ok := g.bot.FindToy("graciebell.art.like"); ok {
     g.like = l.(*like.Like)
