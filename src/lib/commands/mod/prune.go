@@ -72,8 +72,10 @@ var Prune = slash.NewCommand(slash.CmdConfig{
     }
 
     // delete all that fit the filter
-    // err = data.Bot.Session.ChannelMessagesBulkDelete(data.ChannelID, msgsToDelete)
-    // if err != nil { return }
+    err = data.Bot.Session.ChannelMessagesBulkDelete(data.ChannelID, msgsToDelete)
+    if err != nil {
+      return
+    }
 
     // set the response
     res.Data.Content = fmt.Sprintf("Pruned %d message(s)", len(msgsToDelete))
