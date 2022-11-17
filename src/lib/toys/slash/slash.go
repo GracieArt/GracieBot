@@ -13,7 +13,7 @@ type Slash struct {
   toyID string
   toyInfo bubble.ToyInfo
   bot *bubble.Bot
-  storage *bubble.Storage
+  storage *bubble.StorageDriver
   cmdsToRegister []*Command
   commands map[string]*Command
   cmdsByCat map[string][]*Command
@@ -63,7 +63,7 @@ func New(conf Config) (*Slash) {
 }
 
 
-func (s *Slash) Load(b *bubble.Bot, st *bubble.Storage) error {
+func (s *Slash) Load(b *bubble.Bot, st *bubble.StorageDriver) error {
   //s.bubbleBotVersion = debug
   b.Session.AddHandler(s.handleCommand)
   s.bot = b

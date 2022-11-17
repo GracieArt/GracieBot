@@ -25,7 +25,7 @@ type GraciePost struct {
   toyID string
   toyInfo bubble.ToyInfo
   bot *bubble.Bot
-  storage *bubble.Storage
+  storage *bubble.StorageDriver
   port string
   charLimit int
   like *like.Like
@@ -61,7 +61,7 @@ func New(cnf Config) *GraciePost {
 
 
 
-func (g *GraciePost) Load(b *bubble.Bot, s *bubble.Storage) error {
+func (g *GraciePost) Load(b *bubble.Bot, s *bubble.StorageDriver) error {
   g.bot = b
   g.storage = s
 

@@ -4,9 +4,11 @@ import (
   "github.com/gracieart/bubblebot"
   "github.com/bwmarrin/discordgo"
   "github.com/gracieart/graciebot/src/lib/toys/slash"
-  _"log"
+  "log"
   "fmt"
 )
+
+var _ = log.Print // debugging
 
 func (b *Bellhop) Commands() []*slash.Command {
   return []*slash.Command{
@@ -123,7 +125,7 @@ func (b *Bellhop) Cmd_welcome() *slash.Command {
       if !b.storage.HasGuild(data.GuildID) {
         guild, err := b.bot.Session.Guild(data.GuildID)
         if err != nil { return res, err }
-        guildOptions, err = bubble.InsertOne(b.storage, guild)
+        guildOptions, err = b.storage.InsertOne(guild)
         if err != nil { return res, err }
       } else {
         guildOptions, err = b.storage.Guild(data.GuildID)

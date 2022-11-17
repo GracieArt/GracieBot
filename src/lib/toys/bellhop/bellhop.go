@@ -11,7 +11,7 @@ type Bellhop struct {
   toyInfo bubble.ToyInfo
   bot *bubble.Bot
 
-  storage *bubble.Storage
+  storage *bubble.StorageDriver
 }
 
 func (b *Bellhop) ToyID() string { return b.toyID }
@@ -31,7 +31,7 @@ func New() *Bellhop {
 
 
 
-func (b *Bellhop) Load(bot *bubble.Bot, s *bubble.Storage) error {
+func (b *Bellhop) Load(bot *bubble.Bot, s *bubble.StorageDriver) error {
   b.bot = bot
   b.storage = s
 
@@ -41,5 +41,5 @@ func (b *Bellhop) Load(bot *bubble.Bot, s *bubble.Storage) error {
 }
 
 
-
-func (b *Bellhop) OnLifecycleEvent(l bubble.LifecycleEvent) {}
+// satisfy toy interface
+func (b *Bellhop) OnLifecycleEvent(bubble.LifecycleEvent) {}
