@@ -12,6 +12,11 @@ import (
 )
 
 
+const (
+  Version = "3.0"
+)
+
+
 // Varaibles used for command line parameters
 var (
   HideTimestamps bool
@@ -35,6 +40,7 @@ func main() {
   // Initialize the bot
 	GracieBot, err := bubble.NewBot(bubble.Config{
     Name: "GracieBot",
+    Version: Version,
     Token: os.Getenv("DISCORD_API_TOKEN"),
     Toys: toys.Toys( toys.Config{
       DevMode: DevMode,
